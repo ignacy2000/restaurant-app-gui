@@ -4,7 +4,7 @@ import { ProtectedRoute } from '../../../../shared/components/ProtectedRoute'
 
 export const panelRoutes = (
   <Route
-    path="/restaurants/:id/panel"
+    path="panel"
     element={<ProtectedRoute><PanelPage /></ProtectedRoute>}
   />
 )

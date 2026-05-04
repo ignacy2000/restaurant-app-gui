@@ -1,7 +1,6 @@
 import { useState } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { useTables } from '../hooks/useTables'
-import { useRestaurant } from '../../../hooks/useRestaurants'
 import { TableCard } from '../components/TableCard'
 import { AddTableForm } from '../components/AddTableForm'
 import { Spinner } from '../../../../../shared/components/Spinner'
@@ -9,7 +8,6 @@ import type { CreateTableReq } from '../types/table.types'
 
 export function TablesPage() {
   const { id } = useParams<{ id: string }>()
-  const { restaurant } = useRestaurant(id!)
   const { tables, loading, error, create, updateCapacity, remove } = useTables(id!)
   const [showForm, setShowForm] = useState(false)
 
@@ -19,14 +17,9 @@ export function TablesPage() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto px-6 pb-12">
-      <header className="flex items-center justify-between py-5 border-b border-gray-200 mb-8">
-        <div>
-          <Link to={`/restaurants/${id}`} className="text-sm text-gray-500 hover:text-gray-800 transition">
-            ← {restaurant?.name ?? 'Restauracja'}
-          </Link>
-          <h1 className="text-xl font-bold mt-0.5">Stoliki</h1>
-        </div>
+    <>
+      <div className="flex items-center justify-between mb-8">
+        <h1 className="text-xl font-bold">Stoliki</h1>
         {!showForm && (
           <button
             onClick={() => setShowForm(true)}
@@ -35,7 +28,7 @@ export function TablesPage() {
             + Dodaj stolik
           </button>
         )}
-      </header>
+      </div>
 
       {loading ? (
         <Spinner />
@@ -83,6 +76,6 @@ export function TablesPage() {
           )}
         </>
       )}
-    </div>
+    </>
   )
 }

@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { useMenus } from '../hooks/useMenus'
 import { menusApi } from '../services/menus.api'
-import { useRestaurant } from '../../../hooks/useRestaurants'
 import { MenuCard } from '../components/MenuCard'
 import { AddMenuForm } from '../components/AddMenuForm'
 import { Spinner } from '../../../../../shared/components/Spinner'
@@ -10,7 +9,6 @@ import type { CreateMenuReq, MenuItem } from '../types/menu.types'
 
 export function MenusPage() {
   const { id } = useParams<{ id: string }>()
-  const { restaurant } = useRestaurant(id!)
   const { menus, loading, error, create } = useMenus(id!)
 
   const [menuItems, setMenuItems] = useState<MenuItem[]>([])
@@ -35,14 +33,9 @@ export function MenusPage() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto px-6 pb-12">
-      <header className="flex items-center justify-between py-5 border-b border-gray-200 mb-8">
-        <div>
-          <Link to={`/restaurants/${id}`} className="text-sm text-gray-500 hover:text-gray-800 transition">
-            ← {restaurant?.name ?? 'Restauracja'}
-          </Link>
-          <h1 className="text-xl font-bold mt-0.5">Menu</h1>
-        </div>
+    <>
+      <div className="flex items-center justify-between mb-8">
+        <h1 className="text-xl font-bold">Menu</h1>
         {!showForm && (
           <button
             onClick={() => setShowForm(true)}
@@ -51,7 +44,7 @@ export function MenusPage() {
             + Dodaj menu
           </button>
         )}
-      </header>
+      </div>
 
       {loading ? (
         <Spinner />
@@ -97,6 +90,6 @@ export function MenusPage() {
           )}
         </>
       )}
-    </div>
+    </>
   )
 }

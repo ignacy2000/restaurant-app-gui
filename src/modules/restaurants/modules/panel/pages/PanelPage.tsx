@@ -1,8 +1,7 @@
 import { useMemo } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { useOrders } from '../../orders/hooks/useOrders'
 import { useCalls } from '../../calls/hooks/useCalls'
-import { useRestaurant } from '../../../hooks/useRestaurants'
 import { useWebSocket, type WsEvent } from '../../../../../shared/hooks/useWebSocket'
 import { authStorage } from '../../../../../shared/services/auth.storage'
 import { getWsUrl } from '../../../../../shared/utils/ws'
@@ -15,7 +14,6 @@ import { useTables } from '../../tables/hooks/useTables'
 
 export function PanelPage() {
   const { id } = useParams<{ id: string }>()
-  const { restaurant } = useRestaurant(id!)
   const { tables } = useTables(id!)
   const { orders, loading: ordersLoading, updateStatus: updateOrderStatus, upsert: upsertOrder } = useOrders(id!)
   const { calls, loading: callsLoading, updateStatus: updateCallStatus, upsert: upsertCall } = useCalls(id!)
@@ -49,26 +47,20 @@ export function PanelPage() {
   const loading = ordersLoading || callsLoading
 
   return (
-    <div className="max-w-6xl mx-auto px-6 pb-12">
-      <header className="flex items-center justify-between py-5 border-b border-gray-200 mb-8">
-        <div>
-          <Link to={`/restaurants/${id}`} className="text-sm text-gray-500 hover:text-gray-800 transition">
-            ← {restaurant?.name ?? 'Restauracja'}
-          </Link>
-          <h1 className="text-xl font-bold mt-0.5">Panel obsługi</h1>
-        </div>
+    <>
+      <div className="flex items-center justify-between mb-8">
+        <h1 className="text-xl font-bold">Panel obsługi</h1>
         <span className="flex items-center gap-1.5 text-xs text-green-600 font-medium bg-green-50 border border-green-200 rounded-full px-3 py-1">
           <span className="size-1.5 rounded-full bg-green-500 animate-pulse" />
           Na żywo
         </span>
-      </header>
+      </div>
 
       {loading ? (
         <Spinner />
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
-          {/* Orders column */}
           <section>
             <h2 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
               Zamówienia
@@ -110,7 +102,6 @@ export function PanelPage() {
             )}
           </section>
 
-          {/* Calls column */}
           <section>
             <h2 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
               Wezwania kelnera
@@ -154,6 +145,6 @@ export function PanelPage() {
 
         </div>
       )}
-    </div>
+    </>
   )
 }
