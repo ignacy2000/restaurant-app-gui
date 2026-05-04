@@ -1,0 +1,159 @@
+import { useMemo } from 'react'
+import { useParams, Link } from 'react-router-dom'
+import { useOrders } from '../../orders/hooks/useOrders'
+import { useCalls } from '../../calls/hooks/useCalls'
+import { useRestaurant } from '../../../hooks/useRestaurants'
+import { useWebSocket, type WsEvent } from '../../../../../shared/hooks/useWebSocket'
+import { authStorage } from '../../../../../shared/services/auth.storage'
+import { getWsUrl } from '../../../../../shared/utils/ws'
+import { OrderCard } from '../components/OrderCard'
+import { CallCard } from '../components/CallCard'
+import { Spinner } from '../../../../../shared/components/Spinner'
+import type { Order } from '../../orders/types/order.types'
+import type { WaiterCall } from '../../calls/types/call.types'
+import { useTables } from '../../tables/hooks/useTables'
+
+export function PanelPage() {
+  const { id } = useParams<{ id: string }>()
+  const { restaurant } = useRestaurant(id!)
+  const { tables } = useTables(id!)
+  const { orders, loading: ordersLoading, updateStatus: updateOrderStatus, upsert: upsertOrder } = useOrders(id!)
+  const { calls, loading: callsLoading, updateStatus: updateCallStatus, upsert: upsertCall } = useCalls(id!)
+
+  const token = authStorage.getAccessToken()
+  const wsUrl = getWsUrl(`/ws/restaurants/${id}?token=${token}`)
+
+  useWebSocket(wsUrl, (event: WsEvent) => {
+    switch (event.type) {
+      case 'order.created':
+      case 'order.status_changed':
+        upsertOrder(event.payload as Order)
+        break
+      case 'call.created':
+      case 'call.status_changed':
+        upsertCall(event.payload as WaiterCall)
+        break
+    }
+  })
+
+  const tableMap = useMemo(
+    () => Object.fromEntries(tables.map(t => [t.id, t.number])),
+    [tables]
+  )
+
+  const activeOrders = orders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled')
+  const doneOrders = orders.filter(o => o.status === 'delivered' || o.status === 'cancelled')
+  const activeCalls = calls.filter(c => c.status !== 'done')
+  const doneCalls = calls.filter(c => c.status === 'done')
+
+  const loading = ordersLoading || callsLoading
+
+  return (
+    <div className="max-w-6xl mx-auto px-6 pb-12">
+      <header className="flex items-center justify-between py-5 border-b border-gray-200 mb-8">
+        <div>
+          <Link to={`/restaurants/${id}`} className="text-sm text-gray-500 hover:text-gray-800 transition">
+            ← {restaurant?.name ?? 'Restauracja'}
+          </Link>
+          <h1 className="text-xl font-bold mt-0.5">Panel obsługi</h1>
+        </div>
+        <span className="flex items-center gap-1.5 text-xs text-green-600 font-medium bg-green-50 border border-green-200 rounded-full px-3 py-1">
+          <span className="size-1.5 rounded-full bg-green-500 animate-pulse" />
+          Na żywo
+        </span>
+      </header>
+
+      {loading ? (
+        <Spinner />
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+          {/* Orders column */}
+          <section>
+            <h2 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+              Zamówienia
+              {activeOrders.length > 0 && (
+                <span className="text-xs font-bold bg-blue-600 text-white rounded-full px-2 py-0.5">
+                  {activeOrders.length}
+                </span>
+              )}
+            </h2>
+
+            {activeOrders.length === 0 && doneOrders.length === 0 ? (
+              <div className="text-center py-12 text-gray-400 text-sm border-2 border-dashed border-gray-200 rounded-xl">
+                Brak zamówień
+              </div>
+            ) : (
+              <div className="flex flex-col gap-3">
+                {activeOrders.map(order => (
+                  <OrderCard
+                    key={order.id}
+                    order={order}
+                    tableNumber={tableMap[order.table_id]}
+                    onUpdateStatus={updateOrderStatus}
+                  />
+                ))}
+                {doneOrders.length > 0 && (
+                  <>
+                    <p className="text-xs text-gray-400 font-medium mt-2">Zakończone</p>
+                    {doneOrders.map(order => (
+                      <OrderCard
+                        key={order.id}
+                        order={order}
+                        tableNumber={tableMap[order.table_id]}
+                        onUpdateStatus={updateOrderStatus}
+                      />
+                    ))}
+                  </>
+                )}
+              </div>
+            )}
+          </section>
+
+          {/* Calls column */}
+          <section>
+            <h2 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+              Wezwania kelnera
+              {activeCalls.length > 0 && (
+                <span className="text-xs font-bold bg-yellow-500 text-white rounded-full px-2 py-0.5">
+                  {activeCalls.length}
+                </span>
+              )}
+            </h2>
+
+            {activeCalls.length === 0 && doneCalls.length === 0 ? (
+              <div className="text-center py-12 text-gray-400 text-sm border-2 border-dashed border-gray-200 rounded-xl">
+                Brak wezwań
+              </div>
+            ) : (
+              <div className="flex flex-col gap-3">
+                {activeCalls.map(call => (
+                  <CallCard
+                    key={call.id}
+                    call={call}
+                    tableNumber={tableMap[call.table_id]}
+                    onUpdateStatus={updateCallStatus}
+                  />
+                ))}
+                {doneCalls.length > 0 && (
+                  <>
+                    <p className="text-xs text-gray-400 font-medium mt-2">Zakończone</p>
+                    {doneCalls.map(call => (
+                      <CallCard
+                        key={call.id}
+                        call={call}
+                        tableNumber={tableMap[call.table_id]}
+                        onUpdateStatus={updateCallStatus}
+                      />
+                    ))}
+                  </>
+                )}
+              </div>
+            )}
+          </section>
+
+        </div>
+      )}
+    </div>
+  )
+}
