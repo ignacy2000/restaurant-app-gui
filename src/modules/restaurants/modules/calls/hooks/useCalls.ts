@@ -8,7 +8,7 @@ export function useCalls(restaurantId: string) {
   const [error, setError] = useState('')
 
   useEffect(() => {
-    callsApi.getByRestaurant(restaurantId)
+    callsApi.getActiveByRestaurant(restaurantId)
       .then(data => setCalls(data))
       .catch(err => setError(err instanceof Error ? err.message : 'Błąd pobierania wezwań'))
       .finally(() => setLoading(false))
@@ -16,18 +16,24 @@ export function useCalls(restaurantId: string) {
 
   async function updateStatus(callId: string, status: CallStatus) {
     await callsApi.updateStatus(restaurantId, callId, { status })
-    setCalls(prev => prev.map(c => c.id === callId ? { ...c, status } : c))
+    setCalls(prev => {
+      if (status === 'done') return prev.filter(c => c.id !== callId)
+      return prev.map(c => c.id === callId ? { ...c, status } : c)
+    })
   }
 
   function upsert(call: WaiterCall) {
     setCalls(prev => {
       const idx = prev.findIndex(c => c.id === call.id)
+      if (call.status === 'done') {
+        return idx >= 0 ? prev.filter(c => c.id !== call.id) : prev
+      }
       if (idx >= 0) {
         const next = [...prev]
         next[idx] = call
         return next
       }
-      return [call, ...prev]
+      return [...prev, call]
     })
   }
 

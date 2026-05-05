@@ -19,6 +19,11 @@ export const ordersApi = {
     return data ?? []
   },
 
+  async getActiveByRestaurant(restaurantId: string): Promise<Order[]> {
+    const data = await authedHttp<Order[] | null>(`/restaurants/${restaurantId}/orders/active`)
+    return data ?? []
+  },
+
   async getByTable(restaurantId: string, tableId: string): Promise<Order[]> {
     const data = await http<Order[] | null>(`/restaurants/${restaurantId}/tables/${tableId}/orders`)
     return data ?? []

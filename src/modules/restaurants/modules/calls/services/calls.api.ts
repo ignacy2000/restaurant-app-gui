@@ -12,6 +12,11 @@ export const callsApi = {
     return data ?? []
   },
 
+  async getActiveByRestaurant(restaurantId: string): Promise<WaiterCall[]> {
+    const data = await authedHttp<WaiterCall[] | null>(`/restaurants/${restaurantId}/calls/active`)
+    return data ?? []
+  },
+
   updateStatus: (restaurantId: string, callId: string, data: UpdateCallStatusReq) =>
     authedHttp<void>(`/restaurants/${restaurantId}/calls/${callId}/status`, {
       method: 'PATCH',

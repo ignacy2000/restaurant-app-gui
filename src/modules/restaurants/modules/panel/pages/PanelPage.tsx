@@ -39,10 +39,6 @@ export function PanelPage() {
     [tables]
   )
 
-  const activeOrders = orders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled')
-  const doneOrders = orders.filter(o => o.status === 'delivered' || o.status === 'cancelled')
-  const activeCalls = calls.filter(c => c.status !== 'done')
-  const doneCalls = calls.filter(c => c.status === 'done')
   const loading = ordersLoading || callsLoading
 
   return (
@@ -62,30 +58,22 @@ export function PanelPage() {
           <section>
             <h2 className="font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
               Zamówienia
-              {activeOrders.length > 0 && (
+              {orders.length > 0 && (
                 <span className="text-xs font-bold bg-blue-600 text-white rounded-full px-2 py-0.5">
-                  {activeOrders.length}
+                  {orders.length}
                 </span>
               )}
             </h2>
 
-            {activeOrders.length === 0 && doneOrders.length === 0 ? (
+            {orders.length === 0 ? (
               <div className="text-center py-12 text-gray-400 dark:text-gray-600 text-sm border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl">
                 Brak zamówień
               </div>
             ) : (
               <div className="flex flex-col gap-3">
-                {activeOrders.map(order => (
+                {orders.map((order: Order) => (
                   <OrderCard key={order.id} order={order} tableNumber={tableMap[order.table_id]} onUpdateStatus={updateOrderStatus} />
                 ))}
-                {doneOrders.length > 0 && (
-                  <>
-                    <p className="text-xs text-gray-400 dark:text-gray-500 font-medium mt-2">Zakończone</p>
-                    {doneOrders.map(order => (
-                      <OrderCard key={order.id} order={order} tableNumber={tableMap[order.table_id]} onUpdateStatus={updateOrderStatus} />
-                    ))}
-                  </>
-                )}
               </div>
             )}
           </section>
@@ -93,30 +81,22 @@ export function PanelPage() {
           <section>
             <h2 className="font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
               Wezwania kelnera
-              {activeCalls.length > 0 && (
+              {calls.length > 0 && (
                 <span className="text-xs font-bold bg-yellow-500 text-white rounded-full px-2 py-0.5">
-                  {activeCalls.length}
+                  {calls.length}
                 </span>
               )}
             </h2>
 
-            {activeCalls.length === 0 && doneCalls.length === 0 ? (
+            {calls.length === 0 ? (
               <div className="text-center py-12 text-gray-400 dark:text-gray-600 text-sm border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl">
                 Brak wezwań
               </div>
             ) : (
               <div className="flex flex-col gap-3">
-                {activeCalls.map(call => (
+                {calls.map((call: WaiterCall) => (
                   <CallCard key={call.id} call={call} tableNumber={tableMap[call.table_id]} onUpdateStatus={updateCallStatus} />
                 ))}
-                {doneCalls.length > 0 && (
-                  <>
-                    <p className="text-xs text-gray-400 dark:text-gray-500 font-medium mt-2">Zakończone</p>
-                    {doneCalls.map(call => (
-                      <CallCard key={call.id} call={call} tableNumber={tableMap[call.table_id]} onUpdateStatus={updateCallStatus} />
-                    ))}
-                  </>
-                )}
               </div>
             )}
           </section>
