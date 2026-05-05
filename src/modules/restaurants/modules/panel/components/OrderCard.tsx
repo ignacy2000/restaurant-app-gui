@@ -5,6 +5,7 @@ import { Button } from '../../../../../shared/components/Button'
 import { Card } from '../../../../../shared/components/Card'
 
 const STATUS_LABEL: Record<OrderStatus, string> = {
+  awaiting_confirmation: 'Czeka na potwierdzenie',
   pending: 'Oczekuje',
   confirmed: 'Przyjęte',
   preparing: 'W przygotowaniu',
@@ -14,6 +15,7 @@ const STATUS_LABEL: Record<OrderStatus, string> = {
 }
 
 const STATUS_COLOR: Record<OrderStatus, 'yellow' | 'blue' | 'indigo' | 'green' | 'gray' | 'red'> = {
+  awaiting_confirmation: 'gray',
   pending: 'yellow',
   confirmed: 'blue',
   preparing: 'indigo',

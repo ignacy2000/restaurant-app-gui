@@ -1,4 +1,5 @@
 export type OrderStatus =
+  | 'awaiting_confirmation'
   | 'pending'
   | 'confirmed'
   | 'preparing'
@@ -32,6 +33,7 @@ export interface CreateOrderItemReq {
 export interface CreateOrderReq {
   items: CreateOrderItemReq[]
   notes?: string
+  guest_email?: string
 }
 
 export interface UpdateOrderStatusReq {

@@ -53,8 +53,12 @@ export function TablePage() {
     }
   })
 
-  async function handleOrderSubmit(items: CreateOrderItemReq[], notes: string) {
-    const created = await ordersApi.create(restaurantId!, tableId!, { items, notes })
+  async function handleOrderSubmit(items: CreateOrderItemReq[], notes: string, email: string) {
+    const created = await ordersApi.create(restaurantId!, tableId!, {
+      items,
+      notes,
+      guest_email: email || undefined,
+    })
     setOrder(created)
     setOrderDone(true)
   }

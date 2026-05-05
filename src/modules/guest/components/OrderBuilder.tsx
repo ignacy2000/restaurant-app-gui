@@ -14,7 +14,7 @@ interface CartEntry {
 
 interface Props {
   restaurantId: string
-  onSubmit: (items: CreateOrderItemReq[], notes: string) => Promise<void>
+  onSubmit: (items: CreateOrderItemReq[], notes: string, email: string) => Promise<void>
 }
 
 function formatPrice(price: number) {
@@ -27,6 +27,7 @@ export function OrderBuilder({ restaurantId, onSubmit }: Props) {
 
   const [cart, setCart] = useState<CartEntry[]>([])
   const [orderNotes, setOrderNotes] = useState('')
+  const [guestEmail, setGuestEmail] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState('')
 
@@ -60,13 +61,14 @@ export function OrderBuilder({ restaurantId, onSubmit }: Props) {
   }
 
   async function handleSubmit() {
-    if (cart.length === 0) return
+    if (cart.length === 0 || !guestEmail) return
     setSubmitError('')
     setSubmitting(true)
     try {
       await onSubmit(
         cart.map(({ item, quantity }) => ({ name: item.name, quantity })),
-        orderNotes
+        orderNotes,
+        guestEmail
       )
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : 'Błąd składania zamówienia')
@@ -154,6 +156,13 @@ export function OrderBuilder({ restaurantId, onSubmit }: Props) {
             <span className="text-base font-bold text-gray-900 dark:text-white">{formatPrice(totalPrice)}</span>
           </div>
 
+          <Input
+            type="email"
+            placeholder="Adres e-mail (wymagany do potwierdzenia)"
+            value={guestEmail}
+            onChange={e => setGuestEmail(e.target.value)}
+            required
+          />
           <Input
             type="text"
             placeholder="Uwagi do zamówienia (opcjonalnie)"

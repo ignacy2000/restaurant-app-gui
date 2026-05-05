@@ -4,6 +4,7 @@ import type { Order, OrderStatus } from '../../restaurants/modules/orders/types/
 const STEPS: OrderStatus[] = ['pending', 'confirmed', 'preparing', 'ready', 'delivered']
 
 const STEP_LABEL: Record<OrderStatus, string> = {
+  awaiting_confirmation: 'Oczekuje potwierdzenia',
   pending: 'Złożone',
   confirmed: 'Przyjęte',
   preparing: 'W przygotowaniu',
@@ -17,6 +18,19 @@ interface Props {
 }
 
 export function OrderStatusDisplay({ order }: Props) {
+  if (order.status === 'awaiting_confirmation') {
+    return (
+      <Card className="p-5 flex flex-col items-center text-center gap-3">
+        <span className="text-4xl">📧</span>
+        <p className="font-bold text-gray-900 dark:text-white">Sprawdź swoją skrzynkę e-mail</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400">
+          Wysłaliśmy Ci link potwierdzający. Kliknij przycisk w wiadomości, aby złożyć zamówienie.
+        </p>
+        <p className="text-xs text-gray-400 dark:text-gray-500">Link wygasa po 1 godzinie.</p>
+      </Card>
+    )
+  }
+
   if (order.status === 'cancelled') {
     return (
       <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-5">

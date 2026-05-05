@@ -1,6 +1,12 @@
 import { http, authedHttp } from '../../../../../shared/services/http'
 import type { Order, CreateOrderReq, UpdateOrderStatusReq } from '../types/order.types'
 
+export interface ConfirmOrderResponse {
+  order_id: string
+  restaurant_id: string
+  table_id: string
+}
+
 export const ordersApi = {
   create: (restaurantId: string, tableId: string, data: CreateOrderReq) =>
     http<Order>(`/restaurants/${restaurantId}/tables/${tableId}/orders`, {
@@ -23,4 +29,7 @@ export const ordersApi = {
       method: 'PATCH',
       body: JSON.stringify(data),
     }),
+
+  confirmOrder: (token: string) =>
+    http<ConfirmOrderResponse>(`/orders/confirm?token=${encodeURIComponent(token)}`),
 }
