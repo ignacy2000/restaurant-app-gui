@@ -1,9 +1,10 @@
 import { useState, FormEvent } from 'react'
 import type { CreateRestaurantReq } from '../types/restaurant.types'
-
-const inputCls =
-  'w-full px-3.5 py-2.5 border border-gray-200 rounded-lg text-sm outline-none transition ' +
-  'focus:border-blue-500 focus:ring-2 focus:ring-blue-100 bg-white'
+import { Alert } from '../../../shared/components/Alert'
+import { Button } from '../../../shared/components/Button'
+import { Card } from '../../../shared/components/Card'
+import { FormField } from '../../../shared/components/FormField'
+import { Input } from '../../../shared/components/Input'
 
 interface Props {
   onSubmit: (data: CreateRestaurantReq) => Promise<void>
@@ -30,77 +31,51 @@ export function CreateRestaurantForm({ onSubmit, onCancel }: Props) {
   }
 
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm mb-6">
-      <h3 className="text-base font-bold mb-4">Nowa restauracja</h3>
+    <Card className="p-6 mb-6">
+      <h3 className="text-base font-bold mb-4 dark:text-white">Nowa restauracja</h3>
 
-      {error && (
-        <div className="bg-red-50 text-red-600 border border-red-200 rounded-lg px-3.5 py-2.5 text-sm mb-4">
-          {error}
-        </div>
-      )}
+      {error && <Alert className="mb-4">{error}</Alert>}
 
-      <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label htmlFor="r-name" className="block text-sm font-medium text-gray-700 mb-1.5">
-            Nazwa *
-          </label>
-          <input
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <FormField label="Nazwa *" htmlFor="r-name">
+          <Input
             id="r-name"
             type="text"
             required
             value={name}
             onChange={e => setName(e.target.value)}
             placeholder="np. Pizzeria Roma"
-            className={inputCls}
           />
-        </div>
+        </FormField>
 
-        <div className="grid grid-cols-2 gap-4 mb-4">
-          <div>
-            <label htmlFor="r-address" className="block text-sm font-medium text-gray-700 mb-1.5">
-              Adres
-            </label>
-            <input
+        <div className="grid grid-cols-2 gap-4">
+          <FormField label="Adres" htmlFor="r-address">
+            <Input
               id="r-address"
               type="text"
               value={address}
               onChange={e => setAddress(e.target.value)}
               placeholder="ul. Przykładowa 1"
-              className={inputCls}
             />
-          </div>
-          <div>
-            <label htmlFor="r-desc" className="block text-sm font-medium text-gray-700 mb-1.5">
-              Opis
-            </label>
-            <input
+          </FormField>
+          <FormField label="Opis" htmlFor="r-desc">
+            <Input
               id="r-desc"
               type="text"
               value={description}
               onChange={e => setDescription(e.target.value)}
               placeholder="Krótki opis"
-              className={inputCls}
             />
-          </div>
+          </FormField>
         </div>
 
-        <div className="flex justify-end gap-3">
-          <button
-            type="button"
-            onClick={onCancel}
-            className="px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-600 transition hover:bg-gray-50 cursor-pointer"
-          >
-            Anuluj
-          </button>
-          <button
-            type="submit"
-            disabled={loading}
-            className="px-5 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg transition hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
-          >
+        <div className="flex justify-end gap-3 pt-1">
+          <Button type="button" variant="secondary" onClick={onCancel}>Anuluj</Button>
+          <Button type="submit" loading={loading}>
             {loading ? 'Tworzenie…' : 'Utwórz restaurację'}
-          </button>
+          </Button>
         </div>
       </form>
-    </div>
+    </Card>
   )
 }

@@ -1,9 +1,12 @@
 import { BrowserRouter } from 'react-router-dom'
+import { ThemeProvider } from '../shared/contexts/ThemeContext'
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <BrowserRouter>
-      {children}
-    </BrowserRouter>
+    <ThemeProvider>
+      <BrowserRouter>
+        {children}
+      </BrowserRouter>
+    </ThemeProvider>
   )
 }

@@ -13,11 +13,14 @@ function RestaurantModuleLayout() {
 
   return (
     <div className="max-w-6xl mx-auto px-6 pb-12">
-      <header className="flex items-center py-5 border-b border-gray-200 mb-8">
-        <Link to={`/restaurants/${id}`} className="text-sm text-gray-500 hover:text-gray-800 transition">
-          ←  {restaurant?.name ?? 'Restauracja'}
+      <div className="py-4 mb-6 border-b border-gray-200 dark:border-gray-800">
+        <Link
+          to={`/restaurants/${id}`}
+          className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition"
+        >
+          ← {restaurant?.name ?? 'Restauracja'}
         </Link>
-      </header>
+      </div>
       <Outlet />
     </div>
   )

@@ -9,6 +9,7 @@ import { CallWaiterButton } from '../components/CallWaiterButton'
 import { OrderBuilder } from '../components/OrderBuilder'
 import { OrderStatusDisplay } from '../components/OrderStatusDisplay'
 import { Spinner } from '../../../shared/components/Spinner'
+import { Button } from '../../../shared/components/Button'
 import type { Restaurant } from '../../restaurants/types/restaurant.types'
 import type { Table } from '../../restaurants/modules/tables/types/table.types'
 import type { Order, CreateOrderItemReq } from '../../restaurants/modules/orders/types/order.types'
@@ -54,7 +55,7 @@ export function TablePage() {
 
   if (infoLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center">
         <Spinner />
       </div>
     )
@@ -62,54 +63,53 @@ export function TablePage() {
 
   if (infoError || !restaurant || !table) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center p-6">
         <div className="text-center">
           <p className="text-4xl mb-4">🔍</p>
-          <p className="font-bold text-gray-900 mb-1">Nie znaleziono stolika</p>
-          <p className="text-sm text-gray-500">Sprawdź kod QR i spróbuj ponownie</p>
+          <p className="font-bold text-gray-900 dark:text-white mb-1">Nie znaleziono stolika</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Sprawdź kod QR i spróbuj ponownie</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-5">
-        <p className="text-xs text-gray-500 font-medium uppercase tracking-wide">{restaurant.name}</p>
-        <h1 className="text-2xl font-extrabold text-gray-900">Stolik #{table.number}</h1>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+      <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-6 py-5">
+        <p className="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">{restaurant.name}</p>
+        <h1 className="text-2xl font-extrabold text-gray-900 dark:text-white">Stolik #{table.number}</h1>
         {restaurant.address && (
-          <p className="text-xs text-gray-400 mt-0.5">📍 {restaurant.address}</p>
+          <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">📍 {restaurant.address}</p>
         )}
       </div>
 
       <div className="max-w-lg mx-auto px-6 py-6 flex flex-col gap-6">
 
-        {/* Call waiter */}
         <section>
-          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Obsługa</h2>
+          <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">Obsługa</h2>
           <CallWaiterButton restaurantId={restaurantId!} tableId={tableId!} />
         </section>
 
-        {/* Order section */}
         <section>
-          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Zamówienie</h2>
+          <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">Zamówienie</h2>
 
           {orderDone && order ? (
             <div className="flex flex-col gap-4">
               <OrderStatusDisplay order={order} />
               {order.status !== 'delivered' && order.status !== 'cancelled' && (
-                <p className="text-xs text-center text-gray-400">
+                <p className="text-xs text-center text-gray-400 dark:text-gray-500">
                   Status aktualizuje się automatycznie
                 </p>
               )}
               {(order.status === 'delivered' || order.status === 'cancelled') && (
-                <button
+                <Button
+                  variant="secondary"
+                  fullWidth
                   onClick={() => { setOrder(null); setOrderDone(false) }}
-                  className="w-full py-3 border border-gray-200 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-100 transition cursor-pointer"
+                  className="py-3"
                 >
                   Złóż nowe zamówienie
-                </button>
+                </Button>
               )}
             </div>
           ) : (

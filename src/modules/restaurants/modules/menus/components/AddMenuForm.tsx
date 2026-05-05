@@ -1,9 +1,11 @@
 import { useState, FormEvent } from 'react'
 import type { CreateMenuReq } from '../types/menu.types'
-
-const inputCls =
-  'w-full px-3.5 py-2.5 border border-gray-200 rounded-lg text-sm outline-none transition ' +
-  'focus:border-blue-500 focus:ring-2 focus:ring-blue-100 bg-white'
+import { Alert } from '../../../../../shared/components/Alert'
+import { Button } from '../../../../../shared/components/Button'
+import { Card } from '../../../../../shared/components/Card'
+import { FormField } from '../../../../../shared/components/FormField'
+import { Input } from '../../../../../shared/components/Input'
+import { Textarea } from '../../../../../shared/components/Textarea'
 
 interface Props {
   onSubmit: (data: CreateMenuReq) => Promise<void>
@@ -31,62 +33,40 @@ export function AddMenuForm({ onSubmit, onCancel }: Props) {
   }
 
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm mb-6">
-      <h3 className="text-base font-bold mb-4">Nowe menu</h3>
+    <Card className="p-6 mb-6">
+      <h3 className="text-base font-bold mb-4 dark:text-white">Nowe menu</h3>
 
-      {error && (
-        <div className="bg-red-50 text-red-600 border border-red-200 rounded-lg px-3.5 py-2.5 text-sm mb-4">
-          {error}
-        </div>
-      )}
+      {error && <Alert className="mb-4">{error}</Alert>}
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label htmlFor="m-name" className="block text-sm font-medium text-gray-700 mb-1.5">
-            Nazwa *
-          </label>
-          <input
+        <FormField label="Nazwa *" htmlFor="m-name">
+          <Input
             id="m-name"
             type="text"
             required
             value={name}
             onChange={e => setName(e.target.value)}
             placeholder="np. Karta dań, Lunch, Sezonowe"
-            className={inputCls}
           />
-        </div>
+        </FormField>
 
-        <div>
-          <label htmlFor="m-desc" className="block text-sm font-medium text-gray-700 mb-1.5">
-            Opis
-          </label>
-          <textarea
+        <FormField label="Opis" htmlFor="m-desc">
+          <Textarea
             id="m-desc"
             rows={3}
             value={description}
             onChange={e => setDescription(e.target.value)}
             placeholder="Krótki opis menu (opcjonalnie)"
-            className={inputCls + ' resize-none'}
           />
-        </div>
+        </FormField>
 
         <div className="flex justify-end gap-3 pt-1">
-          <button
-            type="button"
-            onClick={onCancel}
-            className="px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-600 transition hover:bg-gray-50 cursor-pointer"
-          >
-            Anuluj
-          </button>
-          <button
-            type="submit"
-            disabled={loading}
-            className="px-5 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg transition hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
-          >
+          <Button type="button" variant="secondary" onClick={onCancel}>Anuluj</Button>
+          <Button type="submit" loading={loading}>
             {loading ? 'Dodawanie…' : 'Dodaj menu'}
-          </button>
+          </Button>
         </div>
       </form>
-    </div>
+    </Card>
   )
 }

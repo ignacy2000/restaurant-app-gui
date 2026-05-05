@@ -3,6 +3,9 @@ import { menusApi } from '../../restaurants/modules/menus'
 import type { MenuItem } from '../../restaurants/modules/menus'
 import type { CreateOrderItemReq } from '../../restaurants/modules/orders/types/order.types'
 import { Spinner } from '../../../shared/components/Spinner'
+import { Input } from '../../../shared/components/Input'
+import { Button } from '../../../shared/components/Button'
+import { Alert } from '../../../shared/components/Alert'
 
 interface CartEntry {
   item: MenuItem
@@ -79,15 +82,14 @@ export function OrderBuilder({ restaurantId, onSubmit }: Props) {
     return (
       <div className="flex flex-col items-center text-center py-12">
         <span className="text-4xl mb-3 opacity-40">🍽️</span>
-        <p className="font-semibold text-gray-700">Menu nie jest jeszcze skonfigurowane</p>
-        <p className="text-sm text-gray-400 mt-1">Zapytaj obsługę o dostępne dania</p>
+        <p className="font-semibold text-gray-700 dark:text-gray-300">Menu nie jest jeszcze skonfigurowane</p>
+        <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">Zapytaj obsługę o dostępne dania</p>
       </div>
     )
   }
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Menu tiles */}
       <div className="grid grid-cols-2 gap-3">
         {menuItems.map(item => {
           const inCart = cart.find(e => e.item.id === item.id)
@@ -96,10 +98,10 @@ export function OrderBuilder({ restaurantId, onSubmit }: Props) {
               key={item.id}
               onClick={() => addToCart(item)}
               className={
-                'relative text-left bg-white border rounded-xl p-4 flex flex-col gap-1 transition cursor-pointer ' +
+                'relative text-left bg-white dark:bg-gray-800 border rounded-xl p-4 flex flex-col gap-1 transition cursor-pointer ' +
                 (inCart
-                  ? 'border-blue-400 shadow-sm shadow-blue-100'
-                  : 'border-gray-200 hover:border-blue-300 hover:shadow-sm')
+                  ? 'border-blue-400 dark:border-blue-500 shadow-sm shadow-blue-100 dark:shadow-blue-900/30'
+                  : 'border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 hover:shadow-sm')
               }
             >
               {inCart && (
@@ -107,41 +109,40 @@ export function OrderBuilder({ restaurantId, onSubmit }: Props) {
                   {inCart.quantity}
                 </span>
               )}
-              <p className="font-semibold text-gray-900 text-sm pr-6 leading-tight">{item.name}</p>
+              <p className="font-semibold text-gray-900 dark:text-white text-sm pr-6 leading-tight">{item.name}</p>
               {item.description && (
-                <p className="text-xs text-gray-400 leading-tight line-clamp-2">{item.description}</p>
+                <p className="text-xs text-gray-400 dark:text-gray-500 leading-tight line-clamp-2">{item.description}</p>
               )}
-              <p className="text-sm font-bold text-blue-600 mt-auto pt-2">{formatPrice(item.price)}</p>
+              <p className="text-sm font-bold text-blue-600 dark:text-blue-400 mt-auto pt-2">{formatPrice(item.price)}</p>
             </button>
           )
         })}
       </div>
 
-      {/* Cart */}
       {cart.length > 0 && (
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-2">
-            <p className="text-sm font-semibold text-gray-700">Koszyk</p>
+            <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">Koszyk</p>
             {cart.map(({ item, quantity }) => (
-              <div key={item.id} className="flex items-center gap-3 bg-white border border-gray-200 rounded-xl px-4 py-3">
+              <div key={item.id} className="flex items-center gap-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3">
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 truncate">{item.name}</p>
-                  <p className="text-xs text-gray-400">{formatPrice(item.price * quantity)}</p>
+                  <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{item.name}</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500">{formatPrice(item.price * quantity)}</p>
                 </div>
                 <div className="flex items-center gap-1">
                   <button
                     onClick={() => setQuantity(item.id, -1)}
-                    className="w-7 h-7 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 font-bold text-base flex items-center justify-center transition cursor-pointer"
+                    className="w-7 h-7 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 font-bold text-base flex items-center justify-center transition cursor-pointer"
                   >−</button>
-                  <span className="w-6 text-center text-sm font-bold text-gray-900">{quantity}</span>
+                  <span className="w-6 text-center text-sm font-bold text-gray-900 dark:text-white">{quantity}</span>
                   <button
                     onClick={() => setQuantity(item.id, 1)}
-                    className="w-7 h-7 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 font-bold text-base flex items-center justify-center transition cursor-pointer"
+                    className="w-7 h-7 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 font-bold text-base flex items-center justify-center transition cursor-pointer"
                   >+</button>
                 </div>
                 <button
                   onClick={() => removeFromCart(item.id)}
-                  className="text-gray-300 hover:text-red-500 transition text-xl leading-none ml-1 cursor-pointer"
+                  className="text-gray-300 dark:text-gray-600 hover:text-red-500 dark:hover:text-red-400 transition text-xl leading-none ml-1 cursor-pointer"
                   aria-label="Usuń"
                 >×</button>
               </div>
@@ -149,27 +150,30 @@ export function OrderBuilder({ restaurantId, onSubmit }: Props) {
           </div>
 
           <div className="flex items-center justify-between px-1">
-            <span className="text-sm text-gray-500">Łącznie</span>
-            <span className="text-base font-bold text-gray-900">{formatPrice(totalPrice)}</span>
+            <span className="text-sm text-gray-500 dark:text-gray-400">Łącznie</span>
+            <span className="text-base font-bold text-gray-900 dark:text-white">{formatPrice(totalPrice)}</span>
           </div>
 
-          <input
+          <Input
             type="text"
             placeholder="Uwagi do zamówienia (opcjonalnie)"
             value={orderNotes}
             onChange={e => setOrderNotes(e.target.value)}
-            className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 bg-white transition"
           />
 
-          {submitError && <p className="text-sm text-red-600">{submitError}</p>}
+          {submitError && <Alert>{submitError}</Alert>}
 
-          <button
+          <Button
             onClick={handleSubmit}
-            disabled={submitting}
-            className="w-full py-3.5 bg-blue-600 text-white font-bold rounded-xl transition hover:bg-blue-700 disabled:opacity-60 cursor-pointer"
+            loading={submitting}
+            fullWidth
+            className="py-3.5 rounded-xl text-base font-bold"
           >
-            {submitting ? 'Wysyłanie…' : `Zamów (${cart.length} ${cart.length === 1 ? 'pozycja' : cart.length < 5 ? 'pozycje' : 'pozycji'} · ${formatPrice(totalPrice)})`}
-          </button>
+            {submitting
+              ? 'Wysyłanie…'
+              : `Zamów (${cart.length} ${cart.length === 1 ? 'pozycja' : cart.length < 5 ? 'pozycje' : 'pozycji'} · ${formatPrice(totalPrice)})`
+            }
+          </Button>
         </div>
       )}
     </div>

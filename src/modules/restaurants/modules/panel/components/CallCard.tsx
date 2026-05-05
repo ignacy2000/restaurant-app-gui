@@ -1,5 +1,8 @@
 import { useState } from 'react'
 import type { WaiterCall, CallStatus } from '../../calls/types/call.types'
+import { Badge } from '../../../../../shared/components/Badge'
+import { Button } from '../../../../../shared/components/Button'
+import { Card } from '../../../../../shared/components/Card'
 
 const STATUS_LABEL: Record<CallStatus, string> = {
   pending: 'Oczekuje',
@@ -7,10 +10,10 @@ const STATUS_LABEL: Record<CallStatus, string> = {
   done: 'Zakończone',
 }
 
-const STATUS_COLOR: Record<CallStatus, string> = {
-  pending: 'bg-yellow-100 text-yellow-800',
-  acknowledged: 'bg-blue-100 text-blue-800',
-  done: 'bg-gray-100 text-gray-500',
+const STATUS_COLOR: Record<CallStatus, 'yellow' | 'blue' | 'gray'> = {
+  pending: 'yellow',
+  acknowledged: 'blue',
+  done: 'gray',
 }
 
 const NEXT_STATUS: Partial<Record<CallStatus, CallStatus>> = {
@@ -45,32 +48,26 @@ export function CallCard({ call, tableNumber, onUpdateStatus }: Props) {
   })
 
   return (
-    <div className={`bg-white border rounded-xl p-4 shadow-sm flex flex-col gap-3 transition ${isDone ? 'opacity-60 border-gray-100' : 'border-gray-200'}`}>
+    <Card className={`p-4 flex flex-col gap-3 transition ${isDone ? 'opacity-60' : ''}`}>
       <div className="flex items-start justify-between gap-2">
         <div>
-          <p className="font-bold text-gray-900">
+          <p className="font-bold text-gray-900 dark:text-white">
             {tableNumber != null ? `Stolik #${tableNumber}` : 'Stolik'}
           </p>
-          <p className="text-xs text-gray-400">{time}</p>
+          <p className="text-xs text-gray-400 dark:text-gray-500">{time}</p>
         </div>
-        <span className={`text-xs font-semibold px-2.5 py-1 rounded-full whitespace-nowrap ${STATUS_COLOR[call.status]}`}>
-          {STATUS_LABEL[call.status]}
-        </span>
+        <Badge color={STATUS_COLOR[call.status]}>{STATUS_LABEL[call.status]}</Badge>
       </div>
 
-      <p className="text-sm text-gray-600 flex items-center gap-2">
+      <p className="text-sm text-gray-600 dark:text-gray-300 flex items-center gap-2">
         <span>🔔</span> Prośba o obsługę
       </p>
 
       {!isDone && nextStatus && (
-        <button
-          onClick={() => handleAction(nextStatus)}
-          disabled={loading}
-          className="w-full py-1.5 bg-blue-600 text-white text-xs font-semibold rounded-lg transition hover:bg-blue-700 disabled:opacity-60 cursor-pointer"
-        >
+        <Button size="sm" fullWidth loading={loading} onClick={() => handleAction(nextStatus)}>
           {loading ? '…' : NEXT_LABEL[call.status]}
-        </button>
+        </Button>
       )}
-    </div>
+    </Card>
   )
 }

@@ -1,6 +1,10 @@
 import { useState, FormEvent } from 'react'
 import { menusApi } from '../services/menus.api'
 import type { Menu, MenuItem, CreateMenuItemReq } from '../types/menu.types'
+import { Badge } from '../../../../../shared/components/Badge'
+import { Button } from '../../../../../shared/components/Button'
+import { Card } from '../../../../../shared/components/Card'
+import { Input } from '../../../../../shared/components/Input'
 
 interface Props {
   menu: Menu
@@ -58,13 +62,13 @@ export function MenuCard({ menu, items, onItemCreated, onItemDeleted }: Props) {
   }
 
   return (
-    <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+    <Card className="overflow-hidden">
       <div className="p-5 flex flex-col gap-2">
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
-            <p className="font-bold text-gray-900 text-base">{menu.name}</p>
+            <p className="font-bold text-gray-900 dark:text-white text-base">{menu.name}</p>
             {menu.description && (
-              <p className="text-sm text-gray-500 leading-relaxed mt-0.5">{menu.description}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mt-0.5">{menu.description}</p>
             )}
           </div>
           <button
@@ -74,28 +78,28 @@ export function MenuCard({ menu, items, onItemCreated, onItemDeleted }: Props) {
             {expanded ? 'Zwiń' : `Pozycje (${items.length})`}
           </button>
         </div>
-        <p className="text-xs text-gray-400 pt-2 border-t border-gray-100">{date}</p>
+        <p className="text-xs text-gray-400 dark:text-gray-500 pt-2 border-t border-gray-100 dark:border-gray-700">{date}</p>
       </div>
 
       {expanded && (
-        <div className="border-t border-gray-100 px-5 py-4 flex flex-col gap-3">
+        <div className="border-t border-gray-100 dark:border-gray-700 px-5 py-4 flex flex-col gap-3">
           {items.length === 0 && !showForm && (
-            <p className="text-sm text-gray-400 text-center py-2">Brak pozycji w tym menu</p>
+            <p className="text-sm text-gray-400 dark:text-gray-500 text-center py-2">Brak pozycji w tym menu</p>
           )}
 
           {items.map(item => (
             <div key={item.id} className="flex items-center gap-3">
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 truncate">{item.name}</p>
+                <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{item.name}</p>
                 {item.description && (
-                  <p className="text-xs text-gray-400 truncate">{item.description}</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500 truncate">{item.description}</p>
                 )}
               </div>
-              <span className="text-sm font-semibold text-blue-600 shrink-0">{formatPrice(item.price)}</span>
+              <Badge color="blue" className="shrink-0">{formatPrice(item.price)}</Badge>
               <button
                 onClick={() => handleDelete(item.id)}
                 disabled={deletingId === item.id}
-                className="text-gray-300 hover:text-red-500 transition text-lg leading-none disabled:opacity-40 cursor-pointer"
+                className="text-gray-300 hover:text-red-500 dark:text-gray-600 dark:hover:text-red-400 transition text-lg leading-none disabled:opacity-40 cursor-pointer"
                 aria-label="Usuń pozycję"
               >×</button>
             </div>
@@ -103,45 +107,14 @@ export function MenuCard({ menu, items, onItemCreated, onItemDeleted }: Props) {
 
           {showForm ? (
             <form onSubmit={handleAddItem} className="flex flex-col gap-2 pt-1">
-              <input
-                type="text"
-                placeholder="Nazwa dania *"
-                value={name}
-                onChange={e => setName(e.target.value)}
-                required
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 bg-white"
-              />
-              <input
-                type="text"
-                placeholder="Opis (opcjonalnie)"
-                value={description}
-                onChange={e => setDescription(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 bg-white"
-              />
-              <input
-                type="number"
-                placeholder="Cena (zł)"
-                value={price}
-                onChange={e => setPrice(e.target.value)}
-                min={0}
-                step="0.01"
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 bg-white"
-              />
+              <Input type="text" placeholder="Nazwa dania *" value={name} onChange={e => setName(e.target.value)} required className="px-3 py-2" />
+              <Input type="text" placeholder="Opis (opcjonalnie)" value={description} onChange={e => setDescription(e.target.value)} className="px-3 py-2" />
+              <Input type="number" placeholder="Cena (zł)" value={price} onChange={e => setPrice(e.target.value)} min={0} step="0.01" className="px-3 py-2" />
               <div className="flex gap-2">
-                <button
-                  type="submit"
-                  disabled={saving}
-                  className="flex-1 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-60 transition cursor-pointer"
-                >
+                <Button type="submit" loading={saving} fullWidth size="sm">
                   {saving ? 'Dodawanie…' : 'Dodaj'}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setShowForm(false)}
-                  className="px-4 py-2 border border-gray-200 text-sm text-gray-600 rounded-lg hover:bg-gray-50 transition cursor-pointer"
-                >
-                  Anuluj
-                </button>
+                </Button>
+                <Button type="button" variant="secondary" size="sm" onClick={() => setShowForm(false)}>Anuluj</Button>
               </div>
             </form>
           ) : (
@@ -154,6 +127,6 @@ export function MenuCard({ menu, items, onItemCreated, onItemDeleted }: Props) {
           )}
         </div>
       )}
-    </div>
+    </Card>
   )
 }

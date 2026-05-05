@@ -71,7 +71,7 @@ export async function authedHttp<T>(path: string, options?: RequestInit): Promis
         return await fetchWithToken<T>(path, options, newToken)
       } catch {
         authStorage.clear()
-        window.location.href = '/'
+        window.location.href = '/login'
         throw err
       }
     }

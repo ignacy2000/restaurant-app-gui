@@ -1,10 +1,10 @@
 import { useState, FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
-
-const inputCls =
-  'w-full px-3.5 py-2.5 border border-gray-200 rounded-lg text-sm outline-none transition ' +
-  'focus:border-blue-500 focus:ring-2 focus:ring-blue-100 bg-white'
+import { Alert } from '../../../shared/components/Alert'
+import { Button } from '../../../shared/components/Button'
+import { FormField } from '../../../shared/components/FormField'
+import { Input } from '../../../shared/components/Input'
 
 export function LoginForm() {
   const { login } = useAuth()
@@ -30,17 +30,10 @@ export function LoginForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {error && (
-        <div className="bg-red-50 text-red-600 border border-red-200 rounded-lg px-3.5 py-2.5 text-sm">
-          {error}
-        </div>
-      )}
+      {error && <Alert>{error}</Alert>}
 
-      <div>
-        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1.5">
-          Adres e-mail
-        </label>
-        <input
+      <FormField label="Adres e-mail" htmlFor="email">
+        <Input
           id="email"
           type="email"
           autoComplete="email"
@@ -48,15 +41,11 @@ export function LoginForm() {
           value={email}
           onChange={e => setEmail(e.target.value)}
           placeholder="jan@example.com"
-          className={inputCls}
         />
-      </div>
+      </FormField>
 
-      <div>
-        <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1.5">
-          Hasło
-        </label>
-        <input
+      <FormField label="Hasło" htmlFor="password">
+        <Input
           id="password"
           type="password"
           autoComplete="current-password"
@@ -64,19 +53,14 @@ export function LoginForm() {
           value={password}
           onChange={e => setPassword(e.target.value)}
           placeholder="••••••••"
-          className={inputCls}
         />
-      </div>
+      </FormField>
 
-      <button
-        type="submit"
-        disabled={loading}
-        className="w-full py-2.5 bg-blue-600 text-white font-semibold rounded-lg transition hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
-      >
+      <Button type="submit" loading={loading} fullWidth size="lg">
         {loading ? 'Logowanie…' : 'Zaloguj się'}
-      </button>
+      </Button>
 
-      <p className="text-center text-sm text-gray-500 pt-1">
+      <p className="text-center text-sm text-gray-500 dark:text-gray-400 pt-1">
         Nie masz konta?{' '}
         <Link to="/register" className="text-blue-600 font-medium hover:underline">
           Zarejestruj się

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { callsApi } from '../../restaurants/modules/calls/services/calls.api'
+import { Button } from '../../../shared/components/Button'
 
 type State = 'idle' | 'loading' | 'done' | 'error'
 
@@ -26,11 +27,11 @@ export function CallWaiterButton({ restaurantId, tableId }: Props) {
 
   if (state === 'done') {
     return (
-      <div className="flex items-center gap-3 bg-green-50 border border-green-200 rounded-xl px-5 py-4">
+      <div className="flex items-center gap-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl px-5 py-4">
         <span className="text-xl">✓</span>
         <div>
-          <p className="font-semibold text-green-800">Kelner został wezwany</p>
-          <p className="text-sm text-green-600">Obsługa jest w drodze</p>
+          <p className="font-semibold text-green-800 dark:text-green-400">Kelner został wezwany</p>
+          <p className="text-sm text-green-600 dark:text-green-500">Obsługa jest w drodze</p>
         </div>
       </div>
     )
@@ -38,16 +39,17 @@ export function CallWaiterButton({ restaurantId, tableId }: Props) {
 
   return (
     <div className="flex flex-col gap-2">
-      <button
+      <Button
         onClick={handleCall}
-        disabled={state === 'loading'}
-        className="w-full py-4 bg-amber-500 hover:bg-amber-600 disabled:opacity-60 text-white font-bold text-base rounded-xl transition flex items-center justify-center gap-2 cursor-pointer shadow-sm"
+        loading={state === 'loading'}
+        fullWidth
+        className="py-4 bg-amber-500 hover:bg-amber-600 dark:bg-amber-500 dark:hover:bg-amber-600 rounded-xl text-base font-bold shadow-sm"
       >
         <span className="text-xl">🔔</span>
         {state === 'loading' ? 'Wysyłanie…' : 'Wezwij kelnera'}
-      </button>
+      </Button>
       {state === 'error' && (
-        <p className="text-sm text-red-600 text-center">Błąd — spróbuj ponownie</p>
+        <p className="text-sm text-red-600 dark:text-red-400 text-center">Błąd — spróbuj ponownie</p>
       )}
     </div>
   )

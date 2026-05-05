@@ -43,14 +43,13 @@ export function PanelPage() {
   const doneOrders = orders.filter(o => o.status === 'delivered' || o.status === 'cancelled')
   const activeCalls = calls.filter(c => c.status !== 'done')
   const doneCalls = calls.filter(c => c.status === 'done')
-
   const loading = ordersLoading || callsLoading
 
   return (
     <>
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-xl font-bold">Panel obsługi</h1>
-        <span className="flex items-center gap-1.5 text-xs text-green-600 font-medium bg-green-50 border border-green-200 rounded-full px-3 py-1">
+        <h1 className="text-xl font-bold dark:text-white">Panel obsługi</h1>
+        <span className="flex items-center gap-1.5 text-xs text-green-600 dark:text-green-400 font-medium bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-full px-3 py-1">
           <span className="size-1.5 rounded-full bg-green-500 animate-pulse" />
           Na żywo
         </span>
@@ -60,9 +59,8 @@ export function PanelPage() {
         <Spinner />
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-
           <section>
-            <h2 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <h2 className="font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
               Zamówienia
               {activeOrders.length > 0 && (
                 <span className="text-xs font-bold bg-blue-600 text-white rounded-full px-2 py-0.5">
@@ -72,29 +70,19 @@ export function PanelPage() {
             </h2>
 
             {activeOrders.length === 0 && doneOrders.length === 0 ? (
-              <div className="text-center py-12 text-gray-400 text-sm border-2 border-dashed border-gray-200 rounded-xl">
+              <div className="text-center py-12 text-gray-400 dark:text-gray-600 text-sm border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl">
                 Brak zamówień
               </div>
             ) : (
               <div className="flex flex-col gap-3">
                 {activeOrders.map(order => (
-                  <OrderCard
-                    key={order.id}
-                    order={order}
-                    tableNumber={tableMap[order.table_id]}
-                    onUpdateStatus={updateOrderStatus}
-                  />
+                  <OrderCard key={order.id} order={order} tableNumber={tableMap[order.table_id]} onUpdateStatus={updateOrderStatus} />
                 ))}
                 {doneOrders.length > 0 && (
                   <>
-                    <p className="text-xs text-gray-400 font-medium mt-2">Zakończone</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500 font-medium mt-2">Zakończone</p>
                     {doneOrders.map(order => (
-                      <OrderCard
-                        key={order.id}
-                        order={order}
-                        tableNumber={tableMap[order.table_id]}
-                        onUpdateStatus={updateOrderStatus}
-                      />
+                      <OrderCard key={order.id} order={order} tableNumber={tableMap[order.table_id]} onUpdateStatus={updateOrderStatus} />
                     ))}
                   </>
                 )}
@@ -103,7 +91,7 @@ export function PanelPage() {
           </section>
 
           <section>
-            <h2 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <h2 className="font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
               Wezwania kelnera
               {activeCalls.length > 0 && (
                 <span className="text-xs font-bold bg-yellow-500 text-white rounded-full px-2 py-0.5">
@@ -113,36 +101,25 @@ export function PanelPage() {
             </h2>
 
             {activeCalls.length === 0 && doneCalls.length === 0 ? (
-              <div className="text-center py-12 text-gray-400 text-sm border-2 border-dashed border-gray-200 rounded-xl">
+              <div className="text-center py-12 text-gray-400 dark:text-gray-600 text-sm border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl">
                 Brak wezwań
               </div>
             ) : (
               <div className="flex flex-col gap-3">
                 {activeCalls.map(call => (
-                  <CallCard
-                    key={call.id}
-                    call={call}
-                    tableNumber={tableMap[call.table_id]}
-                    onUpdateStatus={updateCallStatus}
-                  />
+                  <CallCard key={call.id} call={call} tableNumber={tableMap[call.table_id]} onUpdateStatus={updateCallStatus} />
                 ))}
                 {doneCalls.length > 0 && (
                   <>
-                    <p className="text-xs text-gray-400 font-medium mt-2">Zakończone</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500 font-medium mt-2">Zakończone</p>
                     {doneCalls.map(call => (
-                      <CallCard
-                        key={call.id}
-                        call={call}
-                        tableNumber={tableMap[call.table_id]}
-                        onUpdateStatus={updateCallStatus}
-                      />
+                      <CallCard key={call.id} call={call} tableNumber={tableMap[call.table_id]} onUpdateStatus={updateCallStatus} />
                     ))}
                   </>
                 )}
               </div>
             )}
           </section>
-
         </div>
       )}
     </>

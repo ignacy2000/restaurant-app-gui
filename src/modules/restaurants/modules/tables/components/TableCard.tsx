@@ -1,6 +1,8 @@
 import { useState, useRef } from 'react'
 import { QRCodeSVG } from 'qrcode.react'
 import type { Table } from '../types/table.types'
+import { Button } from '../../../../../shared/components/Button'
+import { Card } from '../../../../../shared/components/Card'
 
 function seats(n: number): string {
   const r10 = n % 10
@@ -9,10 +11,6 @@ function seats(n: number): string {
   if (r10 >= 2 && r10 <= 4 && (r100 < 12 || r100 > 14)) return `${n} miejsca`
   return `${n} miejsc`
 }
-
-const inputCls =
-  'w-24 px-2.5 py-1.5 border border-gray-200 rounded-lg text-sm outline-none transition ' +
-  'focus:border-blue-500 focus:ring-2 focus:ring-blue-100'
 
 interface Props {
   table: Table
@@ -85,97 +83,62 @@ export function TableCard({ table, restaurantId, onUpdateCapacity, onDelete }: P
   }
 
   return (
-    <div className="bg-white border border-gray-200 rounded-xl shadow-sm flex flex-col transition hover:shadow-md overflow-hidden">
+    <Card className="flex flex-col transition hover:shadow-md overflow-hidden">
       <div className="p-5 flex flex-col gap-3">
         <div className="flex items-start justify-between gap-2">
           <div>
-            <p className="text-xs font-medium text-gray-400 uppercase tracking-wide">Stolik</p>
-            <p className="text-3xl font-extrabold text-gray-900">#{table.number}</p>
+            <p className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide">Stolik</p>
+            <p className="text-3xl font-extrabold text-gray-900 dark:text-white">#{table.number}</p>
           </div>
 
           {!editing && (
             <div className="flex gap-1.5 mt-1">
-              <button
-                onClick={() => setShowQr(v => !v)}
-                className="px-3 py-1.5 text-xs font-medium border border-gray-200 rounded-lg text-gray-600 transition hover:bg-gray-50 cursor-pointer"
-              >
-                QR
-              </button>
-              <button
-                onClick={() => setEditing(true)}
-                className="px-3 py-1.5 text-xs font-medium border border-gray-200 rounded-lg text-gray-600 transition hover:bg-gray-50 cursor-pointer"
-              >
-                Edytuj
-              </button>
-              <button
-                onClick={handleDelete}
-                disabled={deleting}
-                className="px-3 py-1.5 text-xs font-medium border border-red-200 rounded-lg text-red-600 transition hover:bg-red-50 disabled:opacity-50 cursor-pointer"
-              >
+              <Button size="sm" variant="secondary" onClick={() => setShowQr(v => !v)}>QR</Button>
+              <Button size="sm" variant="secondary" onClick={() => setEditing(true)}>Edytuj</Button>
+              <Button size="sm" variant="danger" loading={deleting} onClick={handleDelete}>
                 {deleting ? '…' : 'Usuń'}
-              </button>
+              </Button>
             </div>
           )}
         </div>
 
         {editing ? (
           <div className="flex flex-col gap-2">
-            <label className="text-xs font-medium text-gray-600">Pojemność</label>
+            <label className="text-xs font-medium text-gray-600 dark:text-gray-400">Pojemność</label>
             <div className="flex items-center gap-2">
               <input
                 type="number"
                 min={1}
                 value={capacity}
                 onChange={e => setCapacity(Number(e.target.value))}
-                className={inputCls}
+                className="w-24 px-2.5 py-1.5 border border-gray-200 rounded-lg text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:focus:ring-blue-900/30"
               />
-              <button
-                onClick={handleSave}
-                disabled={saving}
-                className="px-3 py-1.5 bg-blue-600 text-white text-xs font-semibold rounded-lg transition hover:bg-blue-700 disabled:opacity-60 cursor-pointer"
-              >
+              <Button size="sm" loading={saving} onClick={handleSave}>
                 {saving ? '…' : 'Zapisz'}
-              </button>
-              <button
-                onClick={handleCancel}
-                className="px-3 py-1.5 text-xs font-medium border border-gray-200 rounded-lg text-gray-600 transition hover:bg-gray-50 cursor-pointer"
-              >
-                Anuluj
-              </button>
+              </Button>
+              <Button size="sm" variant="secondary" onClick={handleCancel}>Anuluj</Button>
             </div>
-            {error && <p className="text-xs text-red-600">{error}</p>}
+            {error && <p className="text-xs text-red-600 dark:text-red-400">{error}</p>}
           </div>
         ) : (
-          <p className="text-sm text-gray-500">{seats(table.capacity)}</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">{seats(table.capacity)}</p>
         )}
       </div>
 
       {showQr && (
-        <div className="border-t border-gray-100 px-5 py-4 flex flex-col items-center gap-3">
-          <QRCodeSVG
-            ref={qrRef}
-            value={guestUrl}
-            size={160}
-            level="M"
-            className="rounded-lg"
-          />
-          <p className="text-xs text-gray-400 break-all text-center leading-relaxed">{guestUrl}</p>
+        <div className="border-t border-gray-100 dark:border-gray-700 px-5 py-4 flex flex-col items-center gap-3">
+          <QRCodeSVG ref={qrRef} value={guestUrl} size={160} level="M" className="rounded-lg" />
+          <p className="text-xs text-gray-400 dark:text-gray-500 break-all text-center leading-relaxed">{guestUrl}</p>
           <div className="flex gap-2 w-full">
-            <button
-              onClick={handleCopy}
-              className="flex-1 py-1.5 text-xs font-medium border border-gray-200 rounded-lg text-gray-600 transition hover:bg-gray-50 cursor-pointer"
-            >
+            <Button size="sm" variant="secondary" fullWidth onClick={handleCopy}>
               {copied ? '✓ Skopiowano' : 'Kopiuj link'}
-            </button>
-            <button
-              onClick={handleDownload}
-              className="flex-1 py-1.5 text-xs font-medium border border-gray-200 rounded-lg text-gray-600 transition hover:bg-gray-50 cursor-pointer"
-            >
+            </Button>
+            <Button size="sm" variant="secondary" fullWidth onClick={handleDownload}>
               Pobierz SVG
-            </button>
+            </Button>
           </div>
         </div>
       )}
-    </div>
+    </Card>
   )
 }
