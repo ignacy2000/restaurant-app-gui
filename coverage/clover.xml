@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1777996320941" clover="3.2.0">
+  <project timestamp="1777996320941" name="All files">
+    <metrics statements="79" coveredstatements="77" conditionals="49" coveredconditionals="42" methods="40" coveredmethods="38" elements="168" coveredelements="157" complexity="0" loc="79" ncloc="79" packages="5" files="8" classes="8"/>
+    <package name="modules.auth.components">
+      <metrics statements="19" coveredstatements="19" conditionals="8" coveredconditionals="7" methods="4" coveredmethods="4"/>
+      <file name="LoginForm.tsx" path="C:\Users\ignac\OneDrive\Pulpit\RST-FULL\gui\src\modules\auth\components\LoginForm.tsx">
+        <metrics statements="19" coveredstatements="19" conditionals="8" coveredconditionals="7" methods="4" coveredmethods="4"/>
+        <line num="10" count="105" type="stmt"/>
+        <line num="11" count="105" type="stmt"/>
+        <line num="12" count="105" type="stmt"/>
+        <line num="13" count="105" type="stmt"/>
+        <line num="14" count="105" type="stmt"/>
+        <line num="15" count="105" type="stmt"/>
+        <line num="16" count="105" type="stmt"/>
+        <line num="17" count="105" type="stmt"/>
+        <line num="20" count="5" type="stmt"/>
+        <line num="21" count="5" type="stmt"/>
+        <line num="22" count="5" type="stmt"/>
+        <line num="23" count="5" type="stmt"/>
+        <line num="24" count="5" type="stmt"/>
+        <line num="25" count="1" type="stmt"/>
+        <line num="27" count="3" type="cond" truecount="2" falsecount="0"/>
+        <line num="29" count="4" type="stmt"/>
+        <line num="33" count="105" type="stmt"/>
+        <line num="45" count="60" type="stmt"/>
+        <line num="57" count="29" type="stmt"/>
+      </file>
+    </package>
+    <package name="modules.auth.hooks">
+      <metrics statements="7" coveredstatements="7" conditionals="0" coveredconditionals="0" methods="4" coveredmethods="4"/>
+      <file name="useAuth.ts" path="C:\Users\ignac\OneDrive\Pulpit\RST-FULL\gui\src\modules\auth\hooks\useAuth.ts">
+        <metrics statements="7" coveredstatements="7" conditionals="0" coveredconditionals="0" methods="4" coveredmethods="4"/>
+        <line num="6" count="2" type="stmt"/>
+        <line num="7" count="1" type="stmt"/>
+        <line num="11" count="2" type="stmt"/>
+        <line num="12" count="1" type="stmt"/>
+        <line num="13" count="1" type="stmt"/>
+        <line num="17" count="1" type="stmt"/>
+        <line num="20" count="7" type="stmt"/>
+      </file>
+    </package>
+    <package name="modules.guest.components">
+      <metrics statements="42" coveredstatements="40" conditionals="30" coveredconditionals="25" methods="27" coveredmethods="25"/>
+      <file name="OrderBuilder.tsx" path="C:\Users\ignac\OneDrive\Pulpit\RST-FULL\gui\src\modules\guest\components\OrderBuilder.tsx">
+        <metrics statements="42" coveredstatements="40" conditionals="30" coveredconditionals="25" methods="27" coveredmethods="25"/>
+        <line num="21" count="138" type="stmt"/>
+        <line num="25" count="58" type="stmt"/>
+        <line num="26" count="58" type="stmt"/>
+        <line num="28" count="58" type="stmt"/>
+        <line num="29" count="58" type="stmt"/>
+        <line num="30" count="58" type="stmt"/>
+        <line num="31" count="58" type="stmt"/>
+        <line num="33" count="58" type="stmt"/>
+        <line num="34" count="13" type="stmt"/>
+        <line num="36" count="0" type="stmt"/>
+        <line num="37" count="12" type="stmt"/>
+        <line num="41" count="10" type="stmt"/>
+        <line num="42" count="10" type="stmt"/>
+        <line num="43" count="10" type="cond" truecount="2" falsecount="0"/>
+        <line num="44" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="46" count="9" type="stmt"/>
+        <line num="51" count="1" type="stmt"/>
+        <line num="52" count="1" type="stmt"/>
+        <line num="53" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="54" count="1" type="stmt"/>
+        <line num="59" count="1" type="stmt"/>
+        <line num="63" count="2" type="cond" truecount="1" falsecount="1"/>
+        <line num="64" count="2" type="stmt"/>
+        <line num="65" count="2" type="stmt"/>
+        <line num="66" count="2" type="stmt"/>
+        <line num="67" count="2" type="stmt"/>
+        <line num="68" count="2" type="stmt"/>
+        <line num="72" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="73" count="1" type="stmt"/>
+        <line num="77" count="58" type="stmt"/>
+        <line num="79" count="58" type="cond" truecount="2" falsecount="0"/>
+        <line num="81" count="37" type="cond" truecount="2" falsecount="0"/>
+        <line num="82" count="2" type="stmt"/>
+        <line num="91" count="35" type="stmt"/>
+        <line num="95" count="70" type="stmt"/>
+        <line num="96" count="70" type="stmt"/>
+        <line num="99" count="10" type="stmt"/>
+        <line num="127" count="24" type="stmt"/>
+        <line num="134" count="1" type="stmt"/>
+        <line num="139" count="0" type="stmt"/>
+        <line num="144" count="1" type="stmt"/>
+        <line num="161" count="10" type="stmt"/>
+      </file>
+    </package>
+    <package name="shared.components">
+      <metrics statements="10" coveredstatements="10" conditionals="11" coveredconditionals="10" methods="4" coveredmethods="4"/>
+      <file name="Alert.tsx" path="C:\Users\ignac\OneDrive\Pulpit\RST-FULL\gui\src\shared\components\Alert.tsx">
+        <metrics statements="2" coveredstatements="2" conditionals="1" coveredconditionals="1" methods="1" coveredmethods="1"/>
+        <line num="12" count="2" type="stmt"/>
+        <line num="25" count="4" type="stmt"/>
+      </file>
+      <file name="Button.tsx" path="C:\Users\ignac\OneDrive\Pulpit\RST-FULL\gui\src\shared\components\Button.tsx">
+        <metrics statements="4" coveredstatements="4" conditionals="8" coveredconditionals="8" methods="1" coveredmethods="1"/>
+        <line num="16" count="2" type="stmt"/>
+        <line num="19" count="2" type="stmt"/>
+        <line num="31" count="2" type="stmt"/>
+        <line num="47" count="128" type="stmt"/>
+      </file>
+      <file name="FormField.tsx" path="C:\Users\ignac\OneDrive\Pulpit\RST-FULL\gui\src\shared\components\FormField.tsx">
+        <metrics statements="1" coveredstatements="1" conditionals="2" coveredconditionals="1" methods="1" coveredmethods="1"/>
+        <line num="11" count="210" type="stmt"/>
+      </file>
+      <file name="Input.tsx" path="C:\Users\ignac\OneDrive\Pulpit\RST-FULL\gui\src\shared\components\Input.tsx">
+        <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+        <line num="4" count="2" type="stmt"/>
+        <line num="6" count="233" type="stmt"/>
+        <line num="21" count="2" type="stmt"/>
+      </file>
+    </package>
+    <package name="shared.utils">
+      <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+      <file name="cn.ts" path="C:\Users\ignac\OneDrive\Pulpit\RST-FULL\gui\src\shared\utils\cn.ts">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+        <line num="5" count="374" type="stmt"/>
+      </file>
+    </package>
+  </project>
+</coverage>
