@@ -29,10 +29,16 @@ export function TablePage() {
     Promise.all([
       restaurantsApi.getRestaurant(restaurantId!),
       tablesApi.getByRestaurant(restaurantId!),
+      ordersApi.getByTable(restaurantId!, tableId!),
     ])
-      .then(([rest, tables]) => {
+      .then(([rest, tables, orders]) => {
         setRestaurant(rest)
         setTable(tables.find(t => t.id === tableId) ?? null)
+        const active = orders.find(o => o.status !== 'delivered' && o.status !== 'cancelled')
+        if (active) {
+          setOrder(active)
+          setOrderDone(true)
+        }
       })
       .catch(() => setInfoError('Nie znaleziono stolika'))
       .finally(() => setInfoLoading(false))

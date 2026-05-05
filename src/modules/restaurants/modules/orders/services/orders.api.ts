@@ -13,6 +13,11 @@ export const ordersApi = {
     return data ?? []
   },
 
+  async getByTable(restaurantId: string, tableId: string): Promise<Order[]> {
+    const data = await http<Order[] | null>(`/restaurants/${restaurantId}/tables/${tableId}/orders`)
+    return data ?? []
+  },
+
   updateStatus: (restaurantId: string, orderId: string, data: UpdateOrderStatusReq) =>
     authedHttp<void>(`/restaurants/${restaurantId}/orders/${orderId}/status`, {
       method: 'PATCH',
