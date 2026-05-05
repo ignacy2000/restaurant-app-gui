@@ -1,5 +1,5 @@
 import { useState, FormEvent } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { Alert } from '../../../shared/components/Alert'
 import { Button } from '../../../shared/components/Button'
@@ -9,6 +9,8 @@ import { Input } from '../../../shared/components/Input'
 export function LoginForm() {
   const { login } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
+  const successMessage = (location.state as { successMessage?: string } | null)?.successMessage
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -30,6 +32,7 @@ export function LoginForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      {successMessage && <Alert variant="success">{successMessage}</Alert>}
       {error && <Alert>{error}</Alert>}
 
       <FormField label="Adres e-mail" htmlFor="email">
@@ -54,6 +57,11 @@ export function LoginForm() {
           onChange={e => setPassword(e.target.value)}
           placeholder="••••••••"
         />
+        <div className="text-right mt-1">
+          <Link to="/forgot-password" className="text-sm text-blue-600 hover:underline">
+            Zapomniałeś hasła?
+          </Link>
+        </div>
       </FormField>
 
       <Button type="submit" loading={loading} fullWidth size="lg">

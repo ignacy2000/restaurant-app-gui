@@ -13,3 +13,11 @@ export interface RegisterResponse {
   email: string
   created_at: string
 }
+
+export interface ForgotPasswordResponse {
+  message: string
+}
+
+export interface ResetPasswordResponse {
+  message: string
+}
