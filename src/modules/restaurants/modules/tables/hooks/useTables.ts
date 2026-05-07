@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { tablesApi } from '../services/tables.api'
 import type { Table, CreateTableReq, UpdateTableReq } from '../types/table.types'
 
@@ -6,30 +6,36 @@ export function useTables(restaurantId: string) {
   const [tables, setTables] = useState<Table[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const mountedRef = useRef(true)
 
   useEffect(() => {
-    let cancelled = false
+    mountedRef.current = true
+    const controller = new AbortController()
 
     async function fetchTables() {
       try {
         setLoading(true)
         setError(null)
-        const data = await tablesApi.getByRestaurant(restaurantId)
-        if (!cancelled) setTables(data.sort((a, b) => a.number - b.number))
+        const data = await tablesApi.getByRestaurant(restaurantId, controller.signal)
+        if (!controller.signal.aborted) setTables(data.sort((a, b) => a.number - b.number))
       } catch (err) {
-        if (!cancelled) setError(err instanceof Error ? err.message : 'Błąd pobierania stolików')
+        if (controller.signal.aborted) return
+        setError(err instanceof Error ? err.message : 'Błąd pobierania stolików')
       } finally {
-        if (!cancelled) setLoading(false)
+        if (!controller.signal.aborted) setLoading(false)
       }
     }
 
     fetchTables()
-    return () => { cancelled = true }
+    return () => {
+      mountedRef.current = false
+      controller.abort()
+    }
   }, [restaurantId])
 
   const create = useCallback(async (data: CreateTableReq): Promise<Table> => {
     const created = await tablesApi.create(restaurantId, data)
-    setTables(prev => [...prev, created].sort((a, b) => a.number - b.number))
+    if (mountedRef.current) setTables(prev => [...prev, created].sort((a, b) => a.number - b.number))
     return created
   }, [restaurantId])
 
@@ -41,8 +47,9 @@ export function useTables(restaurantId: string) {
     })
     try {
       const updated = await tablesApi.updateCapacity(restaurantId, tableId, data)
-      setTables(prev => prev.map(t => t.id === tableId ? updated : t))
+      if (mountedRef.current) setTables(prev => prev.map(t => t.id === tableId ? updated : t))
     } catch (err) {
+      if (!mountedRef.current) return
       if (previous !== null) setTables(previous)
       setError(err instanceof Error ? err.message : 'Błąd aktualizacji stolika')
     }
@@ -54,6 +61,7 @@ export function useTables(restaurantId: string) {
     try {
       await tablesApi.delete(restaurantId, tableId)
     } catch (err) {
+      if (!mountedRef.current) return
       if (previous !== null) setTables(previous)
       setError(err instanceof Error ? err.message : 'Błąd usuwania stolika')
     }

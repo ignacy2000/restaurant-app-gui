@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { ordersApi } from '../services/orders.api'
 import type { Order, OrderStatus } from '../types/order.types'
 
@@ -10,25 +10,31 @@ export function useOrders(restaurantId: string) {
   const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const mountedRef = useRef(true)
 
   useEffect(() => {
-    let cancelled = false
+    mountedRef.current = true
+    const controller = new AbortController()
 
     async function fetchOrders() {
       try {
         setLoading(true)
         setError(null)
-        const data = await ordersApi.getActiveByRestaurant(restaurantId)
-        if (!cancelled) setOrders(data)
+        const data = await ordersApi.getActiveByRestaurant(restaurantId, controller.signal)
+        if (!controller.signal.aborted) setOrders(data)
       } catch (err) {
-        if (!cancelled) setError(err instanceof Error ? err.message : 'Błąd pobierania zamówień')
+        if (controller.signal.aborted) return
+        setError(err instanceof Error ? err.message : 'Błąd pobierania zamówień')
       } finally {
-        if (!cancelled) setLoading(false)
+        if (!controller.signal.aborted) setLoading(false)
       }
     }
 
     fetchOrders()
-    return () => { cancelled = true }
+    return () => {
+      mountedRef.current = false
+      controller.abort()
+    }
   }, [restaurantId])
 
   const updateStatus = useCallback(async (orderId: string, status: OrderStatus) => {
@@ -41,6 +47,7 @@ export function useOrders(restaurantId: string) {
     try {
       await ordersApi.updateStatus(restaurantId, orderId, { status })
     } catch (err) {
+      if (!mountedRef.current) return
       if (previous !== null) setOrders(previous)
       setError(err instanceof Error ? err.message : 'Błąd aktualizacji zamówienia')
     }

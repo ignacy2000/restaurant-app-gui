@@ -2,8 +2,8 @@ import { http, authedHttp } from '../../../../../shared/services/http'
 import type { Menu, CreateMenuReq, MenuItem, CreateMenuItemReq } from '../types/menu.types'
 
 export const menusApi = {
-  async getByRestaurant(restaurantId: string): Promise<Menu[]> {
-    const data = await http<Menu[] | null>(`/restaurants/${restaurantId}/menus`)
+  async getByRestaurant(restaurantId: string, signal?: AbortSignal): Promise<Menu[]> {
+    const data = await http<Menu[] | null>(`/restaurants/${restaurantId}/menus`, { signal })
     return data ?? []
   },
 

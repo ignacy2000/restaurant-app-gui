@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { restaurantsApi } from '../services/restaurants.api'
 import type { Restaurant, CreateRestaurantReq } from '../types/restaurant.types'
 
@@ -6,30 +6,36 @@ export function useRestaurants() {
   const [restaurants, setRestaurants] = useState<Restaurant[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const mountedRef = useRef(true)
 
   useEffect(() => {
-    let cancelled = false
+    mountedRef.current = true
+    const controller = new AbortController()
 
     async function fetchRestaurants() {
       try {
         setLoading(true)
         setError(null)
-        const data = await restaurantsApi.getMyRestaurants()
-        if (!cancelled) setRestaurants(data)
+        const data = await restaurantsApi.getMyRestaurants(controller.signal)
+        if (!controller.signal.aborted) setRestaurants(data)
       } catch (err) {
-        if (!cancelled) setError(err instanceof Error ? err.message : 'Błąd pobierania restauracji')
+        if (controller.signal.aborted) return
+        setError(err instanceof Error ? err.message : 'Błąd pobierania restauracji')
       } finally {
-        if (!cancelled) setLoading(false)
+        if (!controller.signal.aborted) setLoading(false)
       }
     }
 
     fetchRestaurants()
-    return () => { cancelled = true }
+    return () => {
+      mountedRef.current = false
+      controller.abort()
+    }
   }, [])
 
   const create = useCallback(async (data: CreateRestaurantReq): Promise<Restaurant> => {
     const created = await restaurantsApi.createRestaurant(data)
-    setRestaurants(prev => [...prev, created])
+    if (mountedRef.current) setRestaurants(prev => [...prev, created])
     return created
   }, [])
 
@@ -42,23 +48,24 @@ export function useRestaurant(id: string) {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    let cancelled = false
+    const controller = new AbortController()
 
     async function fetchRestaurant() {
       try {
         setLoading(true)
         setError(null)
-        const data = await restaurantsApi.getRestaurant(id)
-        if (!cancelled) setRestaurant(data)
+        const data = await restaurantsApi.getRestaurant(id, controller.signal)
+        if (!controller.signal.aborted) setRestaurant(data)
       } catch (err) {
-        if (!cancelled) setError(err instanceof Error ? err.message : 'Błąd pobierania restauracji')
+        if (controller.signal.aborted) return
+        setError(err instanceof Error ? err.message : 'Błąd pobierania restauracji')
       } finally {
-        if (!cancelled) setLoading(false)
+        if (!controller.signal.aborted) setLoading(false)
       }
     }
 
     fetchRestaurant()
-    return () => { cancelled = true }
+    return () => controller.abort()
   }, [id])
 
   return { restaurant, loading, error }

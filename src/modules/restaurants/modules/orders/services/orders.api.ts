@@ -19,8 +19,8 @@ export const ordersApi = {
     return data ?? []
   },
 
-  async getActiveByRestaurant(restaurantId: string): Promise<Order[]> {
-    const data = await authedHttp<Order[] | null>(`/restaurants/${restaurantId}/orders/active`)
+  async getActiveByRestaurant(restaurantId: string, signal?: AbortSignal): Promise<Order[]> {
+    const data = await authedHttp<Order[] | null>(`/restaurants/${restaurantId}/orders/active`, { signal })
     return data ?? []
   },
 

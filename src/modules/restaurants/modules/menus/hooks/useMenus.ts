@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { menusApi } from '../services/menus.api'
 import type { Menu, CreateMenuReq } from '../types/menu.types'
 
@@ -6,30 +6,36 @@ export function useMenus(restaurantId: string) {
   const [menus, setMenus] = useState<Menu[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const mountedRef = useRef(true)
 
   useEffect(() => {
-    let cancelled = false
+    mountedRef.current = true
+    const controller = new AbortController()
 
     async function fetchMenus() {
       try {
         setLoading(true)
         setError(null)
-        const data = await menusApi.getByRestaurant(restaurantId)
-        if (!cancelled) setMenus(data)
+        const data = await menusApi.getByRestaurant(restaurantId, controller.signal)
+        if (!controller.signal.aborted) setMenus(data)
       } catch (err) {
-        if (!cancelled) setError(err instanceof Error ? err.message : 'Błąd pobierania menu')
+        if (controller.signal.aborted) return
+        setError(err instanceof Error ? err.message : 'Błąd pobierania menu')
       } finally {
-        if (!cancelled) setLoading(false)
+        if (!controller.signal.aborted) setLoading(false)
       }
     }
 
     fetchMenus()
-    return () => { cancelled = true }
+    return () => {
+      mountedRef.current = false
+      controller.abort()
+    }
   }, [restaurantId])
 
   const create = useCallback(async (data: CreateMenuReq): Promise<Menu> => {
     const created = await menusApi.create(restaurantId, data)
-    setMenus(prev => [...prev, created])
+    if (mountedRef.current) setMenus(prev => [...prev, created])
     return created
   }, [restaurantId])
 

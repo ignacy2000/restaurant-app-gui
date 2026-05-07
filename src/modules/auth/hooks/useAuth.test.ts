@@ -62,7 +62,11 @@ describe('useAuth', () => {
 
   describe('register', () => {
     it('registers, then logs in automatically', async () => {
-      mockAuthApi.register.mockResolvedValue(undefined)
+      mockAuthApi.register.mockResolvedValue({
+        id: '123',
+        email: 'new@test.pl',
+        created_at: '2024-01-01T00:00:00Z',
+      })
       mockAuthApi.login.mockResolvedValue({
         access_token: 'acc',
         refresh_token: 'ref',

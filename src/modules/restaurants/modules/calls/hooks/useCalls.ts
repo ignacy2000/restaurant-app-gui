@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { callsApi } from '../services/calls.api'
 import type { WaiterCall, CallStatus } from '../types/call.types'
 
@@ -6,25 +6,31 @@ export function useCalls(restaurantId: string) {
   const [calls, setCalls] = useState<WaiterCall[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const mountedRef = useRef(true)
 
   useEffect(() => {
-    let cancelled = false
+    mountedRef.current = true
+    const controller = new AbortController()
 
     async function fetchCalls() {
       try {
         setLoading(true)
         setError(null)
-        const data = await callsApi.getActiveByRestaurant(restaurantId)
-        if (!cancelled) setCalls(data)
+        const data = await callsApi.getActiveByRestaurant(restaurantId, controller.signal)
+        if (!controller.signal.aborted) setCalls(data)
       } catch (err) {
-        if (!cancelled) setError(err instanceof Error ? err.message : 'Błąd pobierania wezwań')
+        if (controller.signal.aborted) return
+        setError(err instanceof Error ? err.message : 'Błąd pobierania wezwań')
       } finally {
-        if (!cancelled) setLoading(false)
+        if (!controller.signal.aborted) setLoading(false)
       }
     }
 
     fetchCalls()
-    return () => { cancelled = true }
+    return () => {
+      mountedRef.current = false
+      controller.abort()
+    }
   }, [restaurantId])
 
   const updateStatus = useCallback(async (callId: string, status: CallStatus) => {
@@ -37,6 +43,7 @@ export function useCalls(restaurantId: string) {
     try {
       await callsApi.updateStatus(restaurantId, callId, { status })
     } catch (err) {
+      if (!mountedRef.current) return
       if (previous !== null) setCalls(previous)
       setError(err instanceof Error ? err.message : 'Błąd aktualizacji wezwania')
     }

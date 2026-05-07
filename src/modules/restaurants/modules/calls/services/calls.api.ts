@@ -12,8 +12,8 @@ export const callsApi = {
     return data ?? []
   },
 
-  async getActiveByRestaurant(restaurantId: string): Promise<WaiterCall[]> {
-    const data = await authedHttp<WaiterCall[] | null>(`/restaurants/${restaurantId}/calls/active`)
+  async getActiveByRestaurant(restaurantId: string, signal?: AbortSignal): Promise<WaiterCall[]> {
+    const data = await authedHttp<WaiterCall[] | null>(`/restaurants/${restaurantId}/calls/active`, { signal })
     return data ?? []
   },
 

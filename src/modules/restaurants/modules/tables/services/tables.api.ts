@@ -2,8 +2,8 @@ import { http, authedHttp } from '../../../../../shared/services/http'
 import type { Table, CreateTableReq, UpdateTableReq } from '../types/table.types'
 
 export const tablesApi = {
-  async getByRestaurant(restaurantId: string): Promise<Table[]> {
-    const data = await http<Table[] | null>(`/restaurants/${restaurantId}/tables`)
+  async getByRestaurant(restaurantId: string, signal?: AbortSignal): Promise<Table[]> {
+    const data = await http<Table[] | null>(`/restaurants/${restaurantId}/tables`, { signal })
     return data ?? []
   },
 
