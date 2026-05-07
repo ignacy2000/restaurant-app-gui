@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'react-router-dom'
 import { useWebSocket, type WsEvent } from '../../../shared/hooks/useWebSocket'
 import { getWsUrl } from '../../../shared/utils/ws'
@@ -20,18 +20,22 @@ export function TablePage() {
   const [restaurant, setRestaurant] = useState<Restaurant | null>(null)
   const [table, setTable] = useState<Table | null>(null)
   const [infoLoading, setInfoLoading] = useState(true)
-  const [infoError, setInfoError] = useState('')
+  const [infoError, setInfoError] = useState<string | null>(null)
 
   const [order, setOrder] = useState<Order | null>(null)
   const [orderDone, setOrderDone] = useState(false)
 
   useEffect(() => {
-    Promise.all([
-      restaurantsApi.getRestaurant(restaurantId!),
-      tablesApi.getByRestaurant(restaurantId!),
-      ordersApi.getByTable(restaurantId!, tableId!),
-    ])
-      .then(([rest, tables, orders]) => {
+    let cancelled = false
+
+    async function fetchInfo() {
+      try {
+        const [rest, tables, orders] = await Promise.all([
+          restaurantsApi.getRestaurant(restaurantId!),
+          tablesApi.getByRestaurant(restaurantId!),
+          ordersApi.getByTable(restaurantId!, tableId!),
+        ])
+        if (cancelled) return
         setRestaurant(rest)
         setTable(tables.find(t => t.id === tableId) ?? null)
         const active = orders.find(o => o.status !== 'delivered' && o.status !== 'cancelled')
@@ -39,9 +43,15 @@ export function TablePage() {
           setOrder(active)
           setOrderDone(true)
         }
-      })
-      .catch(() => setInfoError('Nie znaleziono stolika'))
-      .finally(() => setInfoLoading(false))
+      } catch {
+        if (!cancelled) setInfoError('Nie znaleziono stolika')
+      } finally {
+        if (!cancelled) setInfoLoading(false)
+      }
+    }
+
+    fetchInfo()
+    return () => { cancelled = true }
   }, [restaurantId, tableId])
 
   const wsUrl = getWsUrl(`/ws/restaurants/${restaurantId}/tables/${tableId}`)
@@ -53,7 +63,7 @@ export function TablePage() {
     }
   })
 
-  async function handleOrderSubmit(items: CreateOrderItemReq[], notes: string, email: string) {
+  const handleOrderSubmit = useCallback(async (items: CreateOrderItemReq[], notes: string, email: string) => {
     const created = await ordersApi.create(restaurantId!, tableId!, {
       items,
       notes,
@@ -61,7 +71,7 @@ export function TablePage() {
     })
     setOrder(created)
     setOrderDone(true)
-  }
+  }, [restaurantId, tableId])
 
   if (infoLoading) {
     return (

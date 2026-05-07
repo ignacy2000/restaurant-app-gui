@@ -1,33 +1,55 @@
-import { useState, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { ordersApi } from '../services/orders.api'
 import type { Order, OrderStatus } from '../types/order.types'
+
+function isOrderActive(status: OrderStatus): boolean {
+  return status !== 'delivered' && status !== 'cancelled'
+}
 
 export function useOrders(restaurantId: string) {
   const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    ordersApi.getActiveByRestaurant(restaurantId)
-      .then(data => setOrders(data))
-      .catch(err => setError(err instanceof Error ? err.message : 'Błąd pobierania zamówień'))
-      .finally(() => setLoading(false))
+    let cancelled = false
+
+    async function fetchOrders() {
+      try {
+        setLoading(true)
+        setError(null)
+        const data = await ordersApi.getActiveByRestaurant(restaurantId)
+        if (!cancelled) setOrders(data)
+      } catch (err) {
+        if (!cancelled) setError(err instanceof Error ? err.message : 'Błąd pobierania zamówień')
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
+    }
+
+    fetchOrders()
+    return () => { cancelled = true }
   }, [restaurantId])
 
-  async function updateStatus(orderId: string, status: OrderStatus) {
-    await ordersApi.updateStatus(restaurantId, orderId, { status })
+  const updateStatus = useCallback(async (orderId: string, status: OrderStatus) => {
+    let previous: Order[] | null = null
     setOrders(prev => {
-      const isActive = status !== 'delivered' && status !== 'cancelled'
-      if (!isActive) return prev.filter(o => o.id !== orderId)
+      previous = prev
+      if (!isOrderActive(status)) return prev.filter(o => o.id !== orderId)
       return prev.map(o => o.id === orderId ? { ...o, status } : o)
     })
-  }
+    try {
+      await ordersApi.updateStatus(restaurantId, orderId, { status })
+    } catch (err) {
+      if (previous !== null) setOrders(previous)
+      setError(err instanceof Error ? err.message : 'Błąd aktualizacji zamówienia')
+    }
+  }, [restaurantId])
 
-  function upsert(order: Order) {
-    const isActive = order.status !== 'delivered' && order.status !== 'cancelled'
+  const upsert = useCallback((order: Order) => {
     setOrders(prev => {
       const idx = prev.findIndex(o => o.id === order.id)
-      if (!isActive) {
+      if (!isOrderActive(order.status)) {
         return idx >= 0 ? prev.filter(o => o.id !== order.id) : prev
       }
       if (idx >= 0) {
@@ -37,7 +59,7 @@ export function useOrders(restaurantId: string) {
       }
       return [...prev, order]
     })
-  }
+  }, [])
 
   return { orders, loading, error, updateStatus, upsert }
 }

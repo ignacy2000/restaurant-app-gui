@@ -1,28 +1,48 @@
-import { useState, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { callsApi } from '../services/calls.api'
 import type { WaiterCall, CallStatus } from '../types/call.types'
 
 export function useCalls(restaurantId: string) {
   const [calls, setCalls] = useState<WaiterCall[]>([])
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    callsApi.getActiveByRestaurant(restaurantId)
-      .then(data => setCalls(data))
-      .catch(err => setError(err instanceof Error ? err.message : 'Błąd pobierania wezwań'))
-      .finally(() => setLoading(false))
+    let cancelled = false
+
+    async function fetchCalls() {
+      try {
+        setLoading(true)
+        setError(null)
+        const data = await callsApi.getActiveByRestaurant(restaurantId)
+        if (!cancelled) setCalls(data)
+      } catch (err) {
+        if (!cancelled) setError(err instanceof Error ? err.message : 'Błąd pobierania wezwań')
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
+    }
+
+    fetchCalls()
+    return () => { cancelled = true }
   }, [restaurantId])
 
-  async function updateStatus(callId: string, status: CallStatus) {
-    await callsApi.updateStatus(restaurantId, callId, { status })
+  const updateStatus = useCallback(async (callId: string, status: CallStatus) => {
+    let previous: WaiterCall[] | null = null
     setCalls(prev => {
+      previous = prev
       if (status === 'done') return prev.filter(c => c.id !== callId)
       return prev.map(c => c.id === callId ? { ...c, status } : c)
     })
-  }
+    try {
+      await callsApi.updateStatus(restaurantId, callId, { status })
+    } catch (err) {
+      if (previous !== null) setCalls(previous)
+      setError(err instanceof Error ? err.message : 'Błąd aktualizacji wezwania')
+    }
+  }, [restaurantId])
 
-  function upsert(call: WaiterCall) {
+  const upsert = useCallback((call: WaiterCall) => {
     setCalls(prev => {
       const idx = prev.findIndex(c => c.id === call.id)
       if (call.status === 'done') {
@@ -35,7 +55,7 @@ export function useCalls(restaurantId: string) {
       }
       return [...prev, call]
     })
-  }
+  }, [])
 
   return { calls, loading, error, updateStatus, upsert }
 }
